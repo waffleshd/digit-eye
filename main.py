@@ -69,6 +69,9 @@ def test_loop(dataloader, model, loss_fn):
 class Main():
     def __init__(self):
 
+        device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
+        print(f"Using {device} device")
+
         #Import training data. To test algorithm, we will be using MNIST database, but in the future I would like to gather my own data to train on.
         train_data = torchvision.datasets.MNIST(
             root="",

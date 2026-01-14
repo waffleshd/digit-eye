@@ -1,5 +1,6 @@
 import torch
 import torchvision
+import random
 
 from torch import nn
 
@@ -104,9 +105,11 @@ class Main():
         torch.save(self.model.state_dict(),'model.pth')
 
     def grab_images(self):
-        dataiterator = iter(self.test_dataloader)
-        images, labels = next(dataiterator)
-        return images,labels
+        # Get a random index from the test dataset
+        random_idx = random.randint(0, len(self.test_dataloader.dataset) - 1)
+        image = self.test_dataloader.dataset[random_idx]
+        # image is a tuple of (tensor, label)
+        return image[0].unsqueeze(0), image[1]  # Return as single-item batch and label
 
 if __name__ == "__main__":
 

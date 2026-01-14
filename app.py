@@ -15,7 +15,6 @@ def predict(model, data):
         predicted_digit = logits.argmax(1).item()  # Get the digit with highest probability
 
         #print(f"Predicted: {predicted_digit}, Actual: {label[0].item()}")
-
     return predicted_digit
 
 def setup_model():
@@ -26,17 +25,33 @@ def setup_model():
     return model
 
 def setup_img(main_class):
-    images, labels = main_class.grab_images()
-    # MNIST tensors come in CHW; squeeze channel and move to HxW for Pillow/Gradio
-    np_imdata = images[0].squeeze(0).mul(255).clamp(0, 255).byte().numpy()
+    image, label = main_class.grab_images()
+    # MNIST tensors come in BCHW; squeeze batch and channel to get HxW for Pillow/Gradio
+    np_imdata = image.squeeze().mul(255).clamp(0, 255).byte().numpy()
+
+    return np_imdata, str(label), image.squeeze(0)
+
+def new_img_and_predict(model, main_class):
+    img, txt, orig_img = setup_img(main_class)
+    predicted = predict(model, orig_img)
+
+    return img, str(txt), str(predicted)
 
 with gr.Blocks() as demo:
     main_class = main.Main()
+    model = setup_model()
 
-    img, txt = setup_img(main_class)
+    with gr.Tab("MNIST Image Predictor"):
+        img_display = gr.Image(image_mode='L', height=280, width=280)
+        txt_display = gr.Markdown(value="")
+        predicted_display = gr.Markdown(value="")
+
+        new_image = gr.Button('New Image')
+        new_image.click(fn=lambda: new_img_and_predict(model, main_class), 
+                        outputs=[img_display, txt_display, predicted_display])
     
-    gr.Image(value=img, image_mode='L', height=280, width=280)
-    gr.Markdown(value=txt)
+    with gr.Tab("Custom Handwriting Detector"):
+        gr.Markdown("WIP")
 
 
 

@@ -16,4 +16,4 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.letmedomything }}
-        run: git push https://waffleshd:$HF_TOKEN@huggingface.co/spaces/waffleshd/digit-eye master:main
+        run: git push https://waffleshd:$HF_TOKEN@huggingface.co/spaces/waffleshd/digit-eye main

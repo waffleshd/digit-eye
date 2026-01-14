@@ -91,7 +91,7 @@ class Main():
         self.model = NeuralNet()
 
         self.learning_rate = 1e-3
-        self.epochs = 5
+        self.epochs = 15
 
         self.optimizer = torch.optim.SGD(self.model.parameters(),lr=self.learning_rate)
         self.loss_fn = nn.CrossEntropyLoss()

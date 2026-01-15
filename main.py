@@ -97,8 +97,9 @@ class Main():
 
 
         # Create tensor dataloaders to pass into the model
-        self.training_dataloader = torch.utils.data.DataLoader(train_data,self.batch_size)
-        self.test_dataloader = torch.utils.data.DataLoader(test_data,self.batch_size)
+        # I forgot to enable shuffling on earlier versions, meaning that the model was most likely overfitting during its training
+        self.training_dataloader = torch.utils.data.DataLoader(train_data,self.batch_size,shuffle=True)
+        self.test_dataloader = torch.utils.data.DataLoader(test_data,self.batch_size,shuffle=True)
 
         self.model = NeuralNet()
 

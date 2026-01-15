@@ -1,14 +1,3 @@
----
-title: Digit Eye
-colorFrom: red
-colorTo: indigo
-sdk: gradio
-sdk_version: 5.49.1
-app_file: app.py
-pinned: false
-license: mit
----
-
 # Digit Eye
 
 Training a convolutional neural network to recognize and classify handwritten data. Pulled MNIST data (a dataset of 60,000 handwritten digits) to train and test on.

@@ -103,34 +103,41 @@ with gr.Blocks() as demo:
     main_class = main.Main()
     model = setup_model()
 
-    with gr.Tab("MNIST Image Predictor"):
-        with gr.Row():
-            img_display = gr.Image(image_mode='L', height=280, width=280)
-            with gr.Column():
-                txt_display = gr.HTML(value="")
-                predicted_display = gr.HTML(value="")
+    gr.Markdown("# Handwritten Digit Classifier")
 
-        new_image = gr.Button('New Image')
+    with gr.Tab("MNIST Image Predictor"):
+        gr.Markdown("## Pulls data from the MNIST database for the model to classify")
+        with gr.Row():
+            img_display = gr.Image(image_mode='L', height=280, width=2800)
+
+            with gr.Column():
+                txt_display = gr.HTML(value=f'<div style="font-size: 24px;"><b> MNIST Label:</b></div>')
+                predicted_display = gr.HTML(value=f'<div style="font-size: 24px;"><b>Predicted:</b></div>')
+
+        new_image = gr.Button('New Image',variant='primary')
         new_image.click(fn=lambda: new_img_and_predict(model, main_class), 
                         outputs=[img_display, txt_display, predicted_display])
     
-    with gr.Tab("Custom Handwriting Detector"):
+    with gr.Tab("Custom Handwriting Predictor"):
+        gr.Markdown("## Draw your own handwritten digit and see the model identify it!")
         with gr.Row():
             with gr.Column(min_width=300):
                 canvas = gr.ImageEditor(
                     height=280,
-                    width=280,
+                    width=2800,
                     type="numpy",
                     image_mode="L",
+                    sources=None,
+                    show_label=False,
                     canvas_size=(280,280),
                     brush=gr.Brush(
-                        colors=["#000000", "#404040", "#808080", "#C0C0C0", "#FFFFFF"],
+                        colors=["#000000", "#404040", "#808080", "#C7C7C7", "#FFFFFF"],
                         default_color="#000000",
                         default_size=10
                     ),
                 )
 
-        predict_btn = gr.Button("Predict")
+        predict_btn = gr.Button("Predict",variant='primary')
         prediction_label = gr.Label(value="",label="Prediction")
 
         predict_btn.click(fn=predict_custom_digit, inputs=[canvas], outputs=prediction_label)

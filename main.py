@@ -1,8 +1,8 @@
 import torch
 import torchvision
 import random
-
 from torch import nn
+from config import LEARNING_RATE, NUM_EPOCHS, BATCH_SIZE
 
 class NeuralNet(nn.Module):
     def __init__(self):
@@ -31,7 +31,9 @@ class NeuralNet(nn.Module):
         logits = self.linear_relu_stack(x)
         return logits
 
-def training_loop(dataloader, model, loss_fn, optimizer, batch_size=64):
+def training_loop(dataloader : torch.utils.data.DataLoader, model : NeuralNet, loss_fn : nn.CrossEntropyLoss, optimizer : torch.optim.Adam, batch_size=64):
+
+    # Set model to training mode
     model.train()
     size = len(dataloader.dataset)
 
@@ -40,16 +42,18 @@ def training_loop(dataloader, model, loss_fn, optimizer, batch_size=64):
         pred = model(X)
         loss = loss_fn(pred, y)
 
-        #Backprop
+        #Backpropagation
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
 
+        #Print out progress to terminal
         if batch % 100 == 0:
             loss, current = loss.item(), batch * batch_size + len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
-def test_loop(dataloader, model, loss_fn):
+def test_loop(dataloader : torch.utils.data.DataLoader, model : NeuralNet, loss_fn : nn.CrossEntropyLoss):
+    # Set to evaluation mode
     model.eval()
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
@@ -68,7 +72,6 @@ def test_loop(dataloader, model, loss_fn):
 
 class Main():
     def __init__(self):
-
         device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
         print(f"Using {device} device")
 
@@ -88,21 +91,25 @@ class Main():
             transform=torchvision.transforms.ToTensor()
         )
 
-        self.training_dataloader = torch.utils.data.DataLoader(train_data,batch_size=64)
-        self.test_dataloader = torch.utils.data.DataLoader(test_data,batch_size=64)
+        self.learning_rate = LEARNING_RATE
+        self.epochs = NUM_EPOCHS
+        self.batch_size = BATCH_SIZE
+
+
+        # Create tensor dataloaders to pass into the model
+        self.training_dataloader = torch.utils.data.DataLoader(train_data,self.batch_size)
+        self.test_dataloader = torch.utils.data.DataLoader(test_data,self.batch_size)
 
         self.model = NeuralNet()
 
-        self.learning_rate = 1e-3
-        self.epochs = 15
-
-        self.optimizer = torch.optim.SGD(self.model.parameters(),lr=self.learning_rate)
+        # First used Stochastic Gradient Descent but switched to Adam, an optimizer based around MNIST data
+        self.optimizer = torch.optim.Adam(self.model.parameters(),lr=self.learning_rate)
         self.loss_fn = nn.CrossEntropyLoss()
 
     def train(self):
         for t in range(self.epochs):
             print(f"Epoch {t+1} \n ------------------------")
-            training_loop(self.training_dataloader,self.model,self.loss_fn,self.optimizer)
+            training_loop(self.training_dataloader,self.model,self.loss_fn,self.optimizer,self.batch_size)
             test_loop(self.test_dataloader,self.model,self.loss_fn)
         
         torch.save(self.model.state_dict(),'model.pth')
@@ -111,7 +118,6 @@ class Main():
         # Get a random index from the test dataset
         random_idx = random.randint(0, len(self.test_dataloader.dataset) - 1)
         image = self.test_dataloader.dataset[random_idx]
-        # image is a tuple of (tensor, label)
         return image[0].unsqueeze(0), image[1]  # Return as single-item batch and label
 
 if __name__ == "__main__":

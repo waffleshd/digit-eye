@@ -47,3 +47,17 @@ Once you have cloned the repository, you can train your own model, by switching 
 **BATCH_SIZE** : This determines the number of images that will be passed into the model for evaluation every "batch". This is used in optimizers such as Stochastic Gradient Descent (SGD) to prevent hitting local minima. This usually doesn't need to be changed.
 
 Check out [this article](https://www.ibm.com/think/topics/learning-rate) by IBM for more information.
+
+
+# Hugging face config
+
+---
+title: Digit Eye
+colorFrom: red
+colorTo: indigo
+sdk: gradio
+sdk_version: 5.49.1
+app_file: app.py
+pinned: false
+license: mit
+---

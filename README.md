@@ -1,6 +1,6 @@
 # Digit Eye
 
-Training a convolutional neural network to recognize and classify handwritten data. Pulled MNIST data (a dataset of 60k handwritten digits) to train and test on.
+Training a convolutional neural network to recognize and classify handwritten data. Pulled MNIST data (a dataset of 60,000 handwritten digits) to train and test on.
 ## Demo
 
 ![Demo of the Project](./demo.gif)
